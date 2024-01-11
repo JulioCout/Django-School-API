@@ -1,11 +1,15 @@
 from rest_framework import viewsets, generics
 from school.models import Student, Course, Registration
 from school.serializer import StudentSerializer, CourseSerializer, RegistrationSerializer, ListRegistrationStudentSerializer, ListStudentsRegistredInCourseSerializer
+from rest_framework.authentication import BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 class StudentsViewSet(viewsets.ModelViewSet):
     """Show all the students"""
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
 
 class CoursesViewSet(viewsets.ModelViewSet):
     """Show all Courses"""
