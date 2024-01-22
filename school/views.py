@@ -1,8 +1,9 @@
-from rest_framework import viewsets, generics
+from rest_framework import viewsets, generics, status
 from school.models import Student, Course, Registration
 from school.serializer import StudentSerializer, StudentSerializerV2, CourseSerializer, RegistrationSerializer, ListRegistrationStudentSerializer, ListStudentsRegistredInCourseSerializer
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
+from rest_framework.response import Response
 
 class StudentsViewSet(viewsets.ModelViewSet):
     """Show all the students"""
@@ -20,6 +21,17 @@ class CoursesViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
     permission_classes = [IsAuthenticated, DjangoModelPermissions]
+    
+    def create(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            response = Response(serializer.data, status=status.HTTP_201_CREATED)
+            id = str(serializer.data['id'])
+            response['Location'] = request.build_absolute_uri() + id
+            return response
+
+
 
 class RegistrationViewSet(viewsets.ModelViewSet):
     """Show all Registrations"""
